@@ -35,3 +35,10 @@ func TestBowlNegativeFails(t *testing.T) {
 	result := Bowl(-1)
 	assert.Error(t, result)
 }
+
+func TestSpareGame(t *testing.T) {
+	Bowl(5)
+	Bowl(5)
+	Bowl(3)
+	assert.Equal(t, 16, Score())
+}
