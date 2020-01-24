@@ -7,6 +7,10 @@ import (
 
 var balls []int
 
+func NewGame() {
+	balls = make([]int, 0)
+}
+
 func Bowl(value int) error {
 
 	if value > 10 || value < 0 {
@@ -22,7 +26,7 @@ func Score() int {
 	var total = 0
 	for i := 0; i < len(balls); i++ {
 		fmt.Printf("[START] index: %d\n", i)
-		if i%2 == 0 {
+		if i%2 == 0 && i > 1 {
 			if (balls[i-1] + balls[i-2]) == 10 {
 				fmt.Printf("[Spare] Adding %d to %d\n", balls[i], total)
 				total += balls[i]
