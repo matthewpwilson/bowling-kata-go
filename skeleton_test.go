@@ -47,3 +47,11 @@ func TestSpareGame(t *testing.T) {
 	Bowl(3)
 	assert.Equal(t, 16, Score())
 }
+
+func TestStrike(t *testing.T){
+	NewGame()
+	Bowl(10)
+	Bowl(5)
+	Bowl(3)
+	assert.Equal(t, 26, Score())
+}
