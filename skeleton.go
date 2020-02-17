@@ -5,15 +5,28 @@ import (
 	"fmt"
 )
 
+// Frame of a bowling game
 type Frame struct {
-	one int
-	two int
+	one   int
+	two   int
+	bonus int
 }
 
-var balls []int
+// var currentFrame *Frame
+// var firstFrame *Frame
+var frames []Frame
+
+var currentFrame int
 
 func NewGame() {
-	balls = make([]int, 0)
+	frames = make([]Frame, 10)
+	for i := range frames {
+		fmt.Printf("Setting up frame %d\n", i)
+		frames[i].one = -1
+		frames[i].two = -1
+		frames[i].bonus = 0
+	}
+	currentFrame = 0
 }
 
 func Bowl(value int) error {
@@ -22,56 +35,63 @@ func Bowl(value int) error {
 		return errors.New("Value must be between 0 and 10")
 	}
 
-	balls = append(balls, value)
-
-	if value == 10 && len(balls)%2 == 1 {
-		Bowl(0)
+	// Advance to next frame if the current one is complete
+	if frames[currentFrame].two != -1 {
+		currentFrame++
 	}
+
+	if frames[currentFrame].one == -1 {
+		frames[currentFrame].one = value
+		// Strike
+		if value == 10 {
+			frames[currentFrame].two = 0
+		}
+	} else if frames[currentFrame].two == -1 {
+		frames[currentFrame].two = value
+	}
+
 	return nil
 }
 
 func Score() int {
 	var total = 0
-	for i := 0; i < len(balls); i++ {
+	for i := 0; i < len(frames); i++ {
 		fmt.Printf("[START] index: %d\n", i)
-		if isFrameBoundary(i) {
-			if isTurkey(i) { // We think we might want to revert this start of a change,
-				// and do the frames refactor next.
 
-			} else if isStrike(i) {
-				if i < len(balls)-1 {
-					fmt.Printf("[Strike] Adding %d and %d to %d\n", balls[i], balls[i+1], total)
-					total += balls[i]
-					total += balls[i+1]
-				} //this logic might not work for consecutive strikes
-			} else {
-				// Detect a Spare situation
-				if isSpare(i) {
-					fmt.Printf("[Spare] Adding %d to %d\n", balls[i], total)
-					total += balls[i]
-				}
+		if frameIsStrike(i) {
+			// Got a strike
+			if isLastFrame(i) {
+				continue
 			}
+
+			frames[i].bonus = frames[i+1].one + frames[i+1].two
+		} else if frameIsSpare(i) {
+			// Got a spare
+			if isLastFrame(i) {
+				continue
+			}
+
+			frames[i].bonus = frames[i+1].one
+		} else {
+			// Carry on
 		}
 
-		fmt.Printf("[END] Adding %d to %d\n", balls[i], total)
-		total += balls[i]
-
+		fmt.Printf("[END] Adding %d and %d to %d\n", frames[i].one, frames[i].two, total)
+		total += frames[i].one
+		total += frames[i].two
+		total += frames[i].bonus
 	}
 	return total
 }
 
-func isFrameBoundary(i int) bool {
-	return i%2 == 0 && i > 1
+func frameIsStrike(i int) bool {
+	return frames[i].one == 10
 }
 
-func isStrike(i int) bool {
-	return balls[i-2] == 10 //&& balls[i-1] == 0
+func frameIsSpare(i int) bool {
+	return 10 == frames[i].one+frames[i].two
 }
 
-func isSpare(i int) bool {
-	return (balls[i-1] + balls[i-2]) == 10
-}
-
-func isTurkey(i int) bool {
-	return balls[i-6] == 10 && balls[i-4] == 10 && isStrike(i)
+func isLastFrame(i int) bool {
+	return i == len(frames)
 }
