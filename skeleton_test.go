@@ -67,6 +67,16 @@ func TestSpareInLastFrame(t *testing.T) {
 	assert.Equal(t, 11, Score())
 }
 
+func TestBonusFailsIfNoSpare(t *testing.T) {
+	NewGame()
+	bowlMany(0, 18)
+	Bowl(5)
+	Bowl(4)
+
+	result := Bowl(1) // bonus ball
+	assert.Error(t, result)
+}
+
 func TestStrike(t *testing.T) {
 	NewGame()
 	Bowl(10)
@@ -77,12 +87,24 @@ func TestStrike(t *testing.T) {
 	assert.Equal(t, 26, Score())
 }
 
-// func TestTurkey(t *testing.T) {
-// 	NewGame()
-// 	Bowl(10) // 30
-// 	Bowl(10) // 25
-// 	Bowl(10) // 19
-// 	Bowl(5)  // 5
-// 	Bowl(4)  // 4
-// 	assert.Equal(t, 83, Score())
-// }
+func TestStrikeInLastFrame(t *testing.T) {
+	NewGame()
+	bowlMany(0, 18)
+	Bowl(10)
+
+	Bowl(5) // bonus ball 1
+	Bowl(1) // bonus ball 2
+
+	assert.Equal(t, 16, Score())
+}
+
+func TestTurkey(t *testing.T) {
+	NewGame()
+	Bowl(10) // 30
+	Bowl(10) // 25
+	Bowl(10) // 19
+	Bowl(5)  // 5
+	Bowl(4)  // 4
+	bowlMany(0, 12)
+	assert.Equal(t, 83, Score())
+}
