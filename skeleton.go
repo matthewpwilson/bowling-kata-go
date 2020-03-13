@@ -2,7 +2,6 @@ package skeleton
 
 import (
 	"errors"
-	"fmt"
 )
 
 // Frame of a bowling game
@@ -83,17 +82,22 @@ func Bowl(value int) error {
 func Score() int {
 	var total = 0
 	for i := 0; i < len(frames); i++ {
-		fmt.Printf("[START] index: %d\n", i)
-
 		if frames[i].isStrike() {
 			if !isLastFrame(i) {
 				total += frames[i+1].one + frames[i+1].two
 
 				if frames[i+1].isStrike() {
-					total += frames[i+2].one
+					// We only added one bowl (a strike), we need to add one more
+					if !isLastFrame(i + 1) {
+						// We can go one frame further
+						total += frames[i+2].one
+					} else {
+						// Strike in frame 9 and 10 - we need the first bonus ball
+						total += bonusOne
+					}
 				}
 			} else {
-				// STrike in last frame
+				// Strike in last frame - we need both bonus balls
 				total += bonusOne + bonusTwo
 			}
 
@@ -102,8 +106,6 @@ func Score() int {
 		} else {
 			// Carry on, frame was a normal (not worth 10) frame
 		}
-
-		fmt.Printf("[END] Adding %d and %d to %d\n", frames[i].one, frames[i].two, total)
 		total += frames[i].one
 		total += frames[i].two
 	}

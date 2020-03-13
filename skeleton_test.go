@@ -98,6 +98,24 @@ func TestStrikeInLastFrame(t *testing.T) {
 	assert.Equal(t, 16, Score())
 }
 
+func TestMaximumScore(t *testing.T) {
+	NewGame()
+	bowlMany(10, 12)
+
+	assert.Equal(t, 300, Score())
+}
+
+func TestStrikesAsBonusBalls(t *testing.T) {
+	NewGame()
+	bowlMany(0, 18)
+	Bowl(10)
+
+	Bowl(10) // bonus ball 1
+	Bowl(10) // bonus ball 2
+
+	assert.Equal(t, 30, Score())
+}
+
 func TestTurkey(t *testing.T) {
 	NewGame()
 	Bowl(10) // 30
