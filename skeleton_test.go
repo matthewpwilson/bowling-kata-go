@@ -126,3 +126,35 @@ func TestTurkey(t *testing.T) {
 	bowlMany(0, 12)
 	assert.Equal(t, 83, Score())
 }
+
+func TestStrikeInLastFrameThenCarryOnBowling(t *testing.T) {
+	NewGame()
+	bowlMany(0, 18)
+	Bowl(10)
+
+	Bowl(5) // bonus ball 1
+	Bowl(1) // bonus ball 2
+
+	result := Bowl(1) // should get an error
+	assert.Error(t, result)
+}
+
+func TestSpareInLastFrameThenCarryOnBowling(t *testing.T) {
+	NewGame()
+	bowlMany(0, 18)
+	Bowl(5)
+	Bowl(5)
+
+	Bowl(5) // bonus ball 1
+
+	result := Bowl(1) // should get an error
+	assert.Error(t, result)
+}
+
+func TestCarryOnBowlingAfterNormalLastFrame(t *testing.T) {
+	NewGame()
+	bowlMany(0, 20)
+
+	result := Bowl(1) // should get an error
+	assert.Error(t, result)
+}
